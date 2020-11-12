@@ -14,17 +14,22 @@ const plugin: Plugin<Hooks> = {
   hooks: {
     afterAllInstalled: async (project) => {
       await Promise.all(project.workspaces.map(async workspace => {
-        let depEntries = new Set<LocatorHash>(); // set of locatorHash 
+        let locatorHashEntries = new Set<LocatorHash>(); // set of locatorHash 
         for (const [identHash, descriptor] of workspace.dependencies) {
-          depEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
+          locatorHashEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
         }
-        for (const depLocatorHash of depEntries) {
+        for (const depLocatorHash of locatorHashEntries) {
           const pkg = project.storedPackages.get(depLocatorHash);
           for (const [identHash, descriptor] of pkg.dependencies) {
-            depEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
+            locatorHashEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
           }
         }
-        await write(join(workspace.cwd, 'dep-hash.workspace'), Array.from(depEntries).join('\n'));            
+        const workspaceDepsContent = Array.from(locatorHashEntries).map(locatorHash => {
+          const pkg = project.storedPackages.get(locatorHash);
+          const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
+          return `${name}:${locatorHash}`;
+        }).join('\n');
+        await write(join(workspace.cwd, 'dep-hash.workspace'), workspaceDepsContent);            
       }))
     },
   },
