@@ -29,7 +29,7 @@ const plugin: Plugin<Hooks> = {
           const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
           return `${name}:${locatorHash}`;
         }).join('\n');
-        await write(join(workspace.cwd, 'dep-hash.workspace'), workspaceDepsContent);            
+        await write(join(workspace.cwd, 'workspace-deps.txt'), workspaceDepsContent);
       }))
     },
   },
