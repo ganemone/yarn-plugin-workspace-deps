@@ -1,8 +1,11 @@
 {
-  "name": "yarn-plugin-workspace-deps",
+  "name": "root",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "workspaces": [
+    "workspace-deps"
+  ],
   "devDependencies": {
     "@yarnpkg/builder": "^2.1.2",
     "typescript": "^4.0.5"
