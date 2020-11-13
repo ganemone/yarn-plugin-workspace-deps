@@ -29,7 +29,7 @@ const plugin: Plugin<Hooks> = {
               locatorHashEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
             }
           }
-          const workspaceDepsContent = Array.from(locatorHashEntries).map(locatorHash => {
+          const workspaceDepsContent = '// @generated\n' + Array.from(locatorHashEntries).map(locatorHash => {
             const pkg = project.storedPackages.get(locatorHash);
             const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
             return `${name}:${locatorHash}`;
