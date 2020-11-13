@@ -33,7 +33,7 @@ const plugin: Plugin<Hooks> = {
             const pkg = project.storedPackages.get(locatorHash);
             const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
             return `${name}:${locatorHash}`;
-          }).join('\n');
+          }).sort().join('\n');
           const outputFilePath = join(workspace.cwd, 'workspace-deps.txt');
           if (installOptions.immutable) {
             if (!await exists(outputFilePath)) {
