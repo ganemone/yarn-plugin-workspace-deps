@@ -5,9 +5,13 @@ import {
   MessageName,
 } from "@yarnpkg/core";
 
+import {
+  Filename,
+  ppath,
+} from "@yarnpkg/fslib";
+
 import {promisify} from 'util';
 import {writeFile, readFile, exists as fileExists} from "fs";
-import {join} from "path";
 
 const write = promisify(writeFile);
 const read = promisify(readFile)
@@ -32,9 +36,9 @@ const plugin: Plugin<Hooks> = {
           const workspaceDepsContent = '// @generated\n' + Array.from(locatorHashEntries).map(locatorHash => {
             const pkg = project.storedPackages.get(locatorHash);
             const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
-            return `${name}:${locatorHash}`;
+            return `${name}:${pkg.version}`;
           }).sort().join('\n');
-          const outputFilePath = join(workspace.cwd, 'workspace-deps.txt');
+          const outputFilePath = ppath.join(workspace.cwd, 'workspace-deps.txt' as Filename);
           if (installOptions.immutable) {
             if (!await exists(outputFilePath)) {
               throw new Error(`Need to create workspace-deps.txt file for ${workspace.cwd}, but --immutable flag was passed`);
