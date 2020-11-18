@@ -2363,6 +2363,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"just-omit@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "just-omit@npm:1.1.0"
+  checksum: 95a00974d4007811d2a31d8dc403536f3e2d6f00807c47605469ca82b144feb5dbaab0b03ad00eca0f16d1ac818a693d4caf1695422df97e59511b5f7438c4c4
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^4.0.0":
   version: 4.0.3
   resolution: "keyv@npm:4.0.3"
@@ -2773,6 +2780,22 @@ __metadata:
   checksum: 20983f3765466c1ab617ed153cb53b70ac5df828d854a3334d185e20b37f436e9096f12bc1b7fc96d8908dc927a3685172d3d89e755774f57b7103460c54dcc5
   languageName: node
   linkType: hard
+
+"package-a@workspace:pkg-a":
+  version: 0.0.0-use.local
+  resolution: "package-a@workspace:pkg-a"
+  dependencies:
+    package-b: 0.0.0-monorepo
+  languageName: unknown
+  linkType: soft
+
+"package-b@0.0.0-monorepo, package-b@workspace:pkg-b":
+  version: 0.0.0-use.local
+  resolution: "package-b@workspace:pkg-b"
+  dependencies:
+    just-omit: ^1.1.0
+  languageName: unknown
+  linkType: soft
 
 "parent-module@npm:^1.0.0":
   version: 1.0.1

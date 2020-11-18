@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "workspaces": [
-    "workspace-deps"
+    "workspace-deps",
+    "pkg-a",
+    "pkg-b"
   ],
   "devDependencies": {
     "@yarnpkg/builder": "^2.1.2",

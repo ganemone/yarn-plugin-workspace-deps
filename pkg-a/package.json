@@ -1,0 +1,8 @@
+{
+  "name": "package-a",
+  "main": "./index.js",
+  "version": "0.0.0-monorepo",
+  "dependencies": {
+    "package-b": "0.0.0-monorepo"
+  }
+}

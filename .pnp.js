@@ -23,6 +23,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."
       },
       {
+        "name": "package-a",
+        "reference": "workspace:pkg-a"
+      },
+      {
+        "name": "package-b",
+        "reference": "workspace:pkg-b"
+      },
+      {
         "name": "yarn-plugin-workspace-deps",
         "reference": "workspace:workspace-deps"
       }
@@ -30,6 +38,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)|$))$)",
     "fallbackExclusionList": [
+      ["package-a", ["workspace:pkg-a"]],
+      ["package-b", ["workspace:pkg-b"]],
       ["root", ["workspace:."]],
       ["yarn-plugin-workspace-deps", ["workspace:workspace-deps"]]
     ],
@@ -2939,6 +2949,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["just-omit", [
+        ["npm:1.1.0", {
+          "packageLocation": "./.yarn/cache/just-omit-npm-1.1.0-4bc1731530-95a00974d4.zip/node_modules/just-omit/",
+          "packageDependencies": [
+            ["just-omit", "npm:1.1.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["keyv", [
         ["npm:4.0.3", {
           "packageLocation": "./.yarn/cache/keyv-npm-4.0.3-4018fb536e-63527e3d01.zip/node_modules/keyv/",
@@ -3393,6 +3412,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["p-try", "npm:2.2.0"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["package-a", [
+        ["workspace:pkg-a", {
+          "packageLocation": "./pkg-a/",
+          "packageDependencies": [
+            ["package-a", "workspace:pkg-a"],
+            ["package-b", "workspace:pkg-b"]
+          ],
+          "linkType": "SOFT",
+        }]
+      ]],
+      ["package-b", [
+        ["workspace:pkg-b", {
+          "packageLocation": "./pkg-b/",
+          "packageDependencies": [
+            ["package-b", "workspace:pkg-b"],
+            ["just-omit", "npm:1.1.0"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["parent-module", [
