@@ -1,8 +1,7 @@
 import {
-  LocatorHash,
+  Descriptor,
   Plugin,
   Hooks,
-  MessageName,
 } from "@yarnpkg/core";
 
 import {
@@ -23,21 +22,22 @@ const plugin: Plugin<Hooks> = {
       const { report } = installOptions
       await report.startTimerPromise('Generating workspace-deps.txt', async () => {
         await Promise.all(project.workspaces.map(async workspace => {
-          let locatorHashEntries = new Set<LocatorHash>(); // set of locatorHash 
+          const descriptorHashEntries = new Set<Descriptor>(); // set of locatorHash 
           for (const [identHash, descriptor] of workspace.dependencies) {
-            locatorHashEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
+            descriptorHashEntries.add(descriptor);
           }
-          for (const depLocatorHash of locatorHashEntries) {
-            const pkg = project.storedPackages.get(depLocatorHash);
+          for (const descriptor of descriptorHashEntries) {
+            const workspace = project.workspacesByIdent.get(descriptor.identHash);
+            const lHash = project.storedResolutions.get(descriptor.descriptorHash);
+            const pkg =  project.storedPackages.get(lHash);
             for (const [identHash, descriptor] of pkg.dependencies) {
-              locatorHashEntries.add(project.storedResolutions.get(descriptor.descriptorHash));
+              if (workspace && workspace.manifest.devDependencies.has(identHash)) {
+                continue;
+              }
+              descriptorHashEntries.add(descriptor);
             }
           }
-          const workspaceDepsContent = '// @generated\n' + Array.from(locatorHashEntries).map(locatorHash => {
-            const pkg = project.storedPackages.get(locatorHash);
-            const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
-            return `${name}:${pkg.version}`;
-          }).sort().join('\n');
+          const workspaceDepsContent = '// @generated\n' + Array.from(new Set(Array.from(descriptorHashEntries).map(calculateEntry).sort())).join('\n');
           const outputFilePath = ppath.join(workspace.cwd, 'workspace-deps.txt' as Filename);
           if (installOptions.immutable) {
             if (!await exists(outputFilePath)) {
@@ -51,8 +51,15 @@ const plugin: Plugin<Hooks> = {
           await write(outputFilePath, workspaceDepsContent);
         }))
       })
+
+      function calculateEntry(descriptor: Descriptor) {
+        const pkg = project.storedPackages.get(project.storedResolutions.get(descriptor.descriptorHash));
+        const name = pkg.scope ? `@${pkg.scope}/${pkg.name}` : pkg.name;
+        return `${name}:${pkg.version}`;
+      }
     },
   },
 };
+
 
 export default plugin;
