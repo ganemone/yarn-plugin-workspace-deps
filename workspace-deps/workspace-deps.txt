@@ -1,4 +1,5 @@
 // @generated
+
 @arcanis/slice-ansi:1.0.2
 @babel/code-frame:7.10.4
 @babel/core:7.12.3

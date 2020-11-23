@@ -20,6 +20,15 @@ const plugin: Plugin<Hooks> = {
   hooks: {
     afterAllInstalled: async (project, installOptions) => {
       const { report } = installOptions
+      const dependenciesMeta = project.topLevelWorkspace.manifest.dependenciesMeta;
+      const metaEntries = [];
+      for (const [key, entries] of dependenciesMeta) {
+        const unplugged = entries.has('unplugged') ? Boolean(entries.get('unplugged')) : false;
+        const built = entries.has('built') ? Boolean(entries.get('unplugged')) : true;
+        const optional = entries.has('optional') ? Boolean(entries.get('optional')) : false;
+        metaEntries.push(`${key}:unplugged:${unplugged}:built:${built}:optional:${optional}`)
+      }
+      const metaContent = metaEntries.join('\n');
       await report.startTimerPromise('Generating workspace-deps.txt', async () => {
         await Promise.all(project.workspaces.map(async workspace => {
           const descriptorHashEntries = new Set<Descriptor>(); // set of locatorHash 
@@ -37,7 +46,7 @@ const plugin: Plugin<Hooks> = {
               descriptorHashEntries.add(descriptor);
             }
           }
-          const workspaceDepsContent = '// @generated\n' + Array.from(new Set(Array.from(descriptorHashEntries).map(calculateEntry).sort())).join('\n');
+          const workspaceDepsContent = '// @generated\n' + metaContent + '\n' + Array.from(new Set(Array.from(descriptorHashEntries).map(calculateEntry).sort())).join('\n');
           const outputFilePath = ppath.join(workspace.cwd, 'workspace-deps.txt' as Filename);
           if (installOptions.immutable) {
             if (!await exists(outputFilePath)) {
